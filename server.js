@@ -7,8 +7,12 @@ const cors        = require('cors');
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
-
+const helmet = require("helmet");
 const app = express();
+
+app.use(helmet.dnsPrefetchControl()); // disable DNS prefetching
+app.use(helmet.frameguard()); // don't allow use in iframe. default should be allow sameorigin
+app.use(helmet.referrerPolicy({ policy: ["origin"] })); // only allow this site to send referrer for pages
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
