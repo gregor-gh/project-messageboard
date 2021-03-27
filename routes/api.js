@@ -1,4 +1,5 @@
 'use strict';
+const ObjectId = require("mongodb").ObjectID;
 const msg = require("../api/messages.js");
 
 module.exports = function (app) {
@@ -21,8 +22,14 @@ module.exports = function (app) {
     });
 
   app.route('/api/replies/:board')
-    .post((req, res) => {
-      
+    .post(async (req, res) => {
+      const board = req.params.board;
+      const thread_id = new ObjectId(req.body.thread_id);
+      const text = req.body.text;
+      const delete_password = req.body.delete_password;
+
+      await msg.updateThread(thread_id, text, delete_password);
+      res.sendFile(process.cwd() + "/views/thread.html");
     });
 
 };

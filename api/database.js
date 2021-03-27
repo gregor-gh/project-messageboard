@@ -30,7 +30,8 @@ const createThread = async (board, text, delete_password) => {
     bumped_on: date,
     reported: false,
     delete_password,
-    replies: []
+    replies: [],
+    replycount: 0
   });
 }
 
@@ -45,25 +46,28 @@ const updateThread = async (thread_id, text, delete_password) => {
   date = new Date();
 
   // get current replies
-  const { replies } = c.findOne({
+  const { replies, replycount } = await c.findOne({
     _id: thread_id,
   });
 
   // add reply
-  await c.updateOne({
-      _id:thread_id,
+  const response = await c.updateOne({
+    _id: thread_id,
   }, {
     $set: {
       bumped_on: date,
-      replies: [...replies, {
+      replies: [...replies || [], {
         text,
         created_on: date,
         delete_password,
-        reported:false
-      }]
-      }
+        reported: false
+      }],
+      replycount: replycount + 1
     }
-  )
+  }
+  );
+
+  console.log(response);
 }
 
 const getThreads = async board => {
@@ -73,7 +77,15 @@ const getThreads = async board => {
   // set table
   const c = db.collection("thread");
 
-  const response = await c.find({ board },{_id:0,replies:{$limit:3}}).limit(10).sort({ bumped_on:-1}).toArray();
+  // get mnost recent 10 threads
+  const response = await c.find({
+    board
+  }, {
+    replies: { $limit: 3 }
+  }
+  ).limit(10)
+    .sort({ bumped_on: -1 })
+    .toArray();
 
   return response;
 }
