@@ -4,6 +4,11 @@ const msg = require("../api/messages.js");
 module.exports = function (app) {
 
   app.route('/api/threads/:board')
+    .get(async (req, res, done) => {
+      const board = req.params.board;
+      const response = await msg.getThreads(board);
+      res.send(response);
+    })
     .post(async (req, res) => {
       const board = req.params.board;
       const text = req.body.text;
@@ -11,9 +16,13 @@ module.exports = function (app) {
 
       await msg.createThread(board, text, delete_password);
 
-      res.send("TEST");
+      //res.redirect("../views/board.html");
+      res.sendFile(process.cwd() + "/views/board.html");
     });
 
-  app.route('/api/replies/:board');
+  app.route('/api/replies/:board')
+    .post((req, res) => {
+      
+    });
 
 };

@@ -66,4 +66,16 @@ const updateThread = async (thread_id, text, delete_password) => {
   )
 }
 
-module.exports = { createThread, updateThread };
+const getThreads = async board => {
+  // connect
+  const db = await connect();
+
+  // set table
+  const c = db.collection("thread");
+
+  const response = await c.find({ board },{_id:0,replies:{$limit:3}}).limit(10).sort({ bumped_on:-1}).toArray();
+
+  return response;
+}
+
+module.exports = { createThread, updateThread, getThreads };
