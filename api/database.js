@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
+const ObjectId = require("mongodb").ObjectID;
 
 const connect = async () => {
   // connect to db
@@ -57,6 +58,7 @@ const updateThread = async (thread_id, text, delete_password) => {
     $set: {
       bumped_on: date,
       replies: [...replies || [], {
+        _id: new ObjectId(),
         text,
         created_on: date,
         delete_password,
@@ -78,16 +80,31 @@ const getThreads = async board => {
   const c = db.collection("thread");
 
   // get mnost recent 10 threads
-  const response = await c.find({
-    board
-  }, {
-    replies: { $limit: 3 }
-  }
-  ).limit(10)
+  const response = await c.find({ board })
+    .limit(10)
     .sort({ bumped_on: -1 })
     .toArray();
 
   return response;
 }
 
-module.exports = { createThread, updateThread, getThreads };
+const getReplies = async (board, thread_id) => {
+  // connect
+  const db = await connect();
+
+  // set table
+  const c = db.collection("thread");
+
+  const test = await c.find({
+    _id: thread_id,
+  }).toArray();
+
+  // get replies
+  const { replies } = await c.findOne({
+    _id: thread_id,
+  });
+
+  return replies;
+}
+
+module.exports = { createThread, updateThread, getThreads, getReplies };

@@ -11,8 +11,24 @@ const updateThread = async (thread_id, text, delete_password) => {
 const getThreads = async board => {
   // get threads for the board
   const response = await db.getThreads(board);
-  console.log(response);
+
+  // replace the replys array with the most recent three replies
+  const lessReplies = response.map((el, i) => {
+    const replies = el.replies
+      .sort((a, b) => a?.created_on - b?.created_on)
+      .slice(-3)
+      
+    return {
+      ...el,
+      replies
+    }
+  })
+  return lessReplies;
+}
+
+const getReplies = async (board, thread_id) => {
+  const response = await db.getReplies(board, thread_id);
   return response;
 }
 
-module.exports = { createThread, updateThread,getThreads };
+module.exports = { createThread, updateThread,getThreads,getReplies };

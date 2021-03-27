@@ -68,6 +68,7 @@
                 thread.push('</div>')
               });
               thread.push('<div class="newReply">')
+                console.log(ele._id)
               thread.push('<form action="/api/replies/'+currentBoard+'/" method="post" id="newReply">');
               thread.push('<input type="hidden" name="thread_id" value="'+ele._id+'">');
               thread.push('<textarea rows="5" cols="80" type="text" placeholder="Quick reply..." name="text" required=""></textarea><br>');

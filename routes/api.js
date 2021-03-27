@@ -29,6 +29,13 @@ module.exports = function (app) {
       const delete_password = req.body.delete_password;
 
       await msg.updateThread(thread_id, text, delete_password);
+      res.redirect(`/api/replies/${board}?thread_id=${thread_id}`);
+    })
+    .get(async (req, res) => {
+      const board = req.params.board;
+      const thread_id = new ObjectId(req.query.thread_id);
+
+      await msg.getReplies(board, thread_id);
       res.sendFile(process.cwd() + "/views/thread.html");
     });
 
