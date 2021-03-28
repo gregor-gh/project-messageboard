@@ -107,4 +107,44 @@ const getReplies = async (board, thread_id) => {
   return replies;
 }
 
-module.exports = { createThread, updateThread, getThreads, getReplies };
+const deleteBoard = async (board,delete_password) => {
+  // connect
+  const db = await connect();
+
+  // set table
+  const c = db.collection("thread");
+
+  // get delete pw
+  const storedBoard = c.findOne({ board });
+
+  // if stored passowrd is same as passed passwrod then delete
+  if (storedBoard.delete_password == delete_password) {
+    c.deleteOne({ board });
+    return "success";
+  }
+
+  // toherwise return access denied
+  return "incorrect password"
+}
+
+const deleteReply = async (thread_id, reply_id, delete_password) => {
+  // connect
+  const db = await connect();
+
+  // set table
+  const c = db.collection("thread");
+
+  // get delete pw
+  const { replies } = c.findOne({ _id: thread_id });
+  
+  let todelete;
+
+  replies.forEach(el => {
+    if (el.delete_password == delete_password) {
+      todelete
+
+    }
+  })
+}
+
+module.exports = { createThread, updateThread, getThreads, getReplies,deleteBoard, deleteReply };

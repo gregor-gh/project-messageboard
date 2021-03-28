@@ -31,4 +31,11 @@ const getReplies = async (board, thread_id) => {
   return response;
 }
 
-module.exports = { createThread, updateThread,getThreads,getReplies };
+const deleteBoard = async (board,delete_password) => {
+  return await db.deleteBoard(board,delete_password);
+}
+const deleteReply = async (thread_id, reply_id, delete_password) => {
+  return await db.deleteReply(thread_id, reply_id, delete_password);
+}
+
+module.exports = { createThread, updateThread,getThreads,getReplies,deleteBoard, deleteReply };
