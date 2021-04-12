@@ -107,7 +107,7 @@ const getReplies = async (board, thread_id) => {
   return replies;
 }
 
-const deleteBoard = async (board,delete_password) => {
+const deleteBoard = async (board, delete_password) => {
   // connect
   const db = await connect();
 
@@ -135,16 +135,26 @@ const deleteReply = async (thread_id, reply_id, delete_password) => {
   const c = db.collection("thread");
 
   // get delete pw
-  const { replies } = c.findOne({ _id: thread_id });
-  
-  let todelete;
+  const thread = c.findOne({ _id: thread_id });
 
-  replies.forEach(el => {
-    if (el.delete_password == delete_password) {
-      todelete
+  let newreplies = [];
 
+  thread.replies.forEach(el => {
+    if (el.delete_password != delete_password) {
+      newreplies.push(el);
+    }
+  });
+
+  thread.replies = { ...newreplies };
+
+  //TODO finish
+  const response = await c.updateOne({
+    _id:thread_id
+  }, {
+    $set {
+      ...thread
     }
   })
 }
 
-module.exports = { createThread, updateThread, getThreads, getReplies,deleteBoard, deleteReply };
+module.exports = { createThread, updateThread, getThreads, getReplies, deleteBoard, deleteReply };
